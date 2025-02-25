@@ -2,28 +2,34 @@
 <html>
 <head>
     <title>QR Code Scanner</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js" defer></script>
+    <!-- Include Instascan library from a CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
 </head>
 <body>
     <h1>QR Code Scanner</h1>
-    <video id="preview" width="320" height="240" style="border: 1px solid black;"></video>
+    <video id="preview" width="320" height="240"></video>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-            scanner.addListener('scan', function (content) {
-                console.log('Scanned content:', content);
-                // Here, add your fetch to Google Apps Script
-            });
-            Instascan.Camera.getCameras().then(function (cameras) {
-                if (cameras.length > 0) {
-                    scanner.start(cameras[0]);
-                } else {
-                    console.error('No cameras found.');
-                    alert('No cameras found.');
-                }
-            }).catch(function (e) {
-                console.error('Error initializing cameras:', e);
-            });
+        let scanner = new Instascan.Scanner({
+            video: document.getElementById('preview'),
+            scanPeriod: 5,
+            mirror: false
+        });
+
+        scanner.addListener('scan', function(content) {
+            console.log('Scanned content:', content);
+            // You can process the content here, such as sending it to a server or displaying it on the page
+        });
+
+        Instascan.Camera.getCameras().then(function(cameras) {
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]); // Start the first camera found
+            } else {
+                console.error('No cameras found.');
+                alert('No cameras found.');
+            }
+        }).catch(function(e) {
+            console.error('Error initializing cameras:', e);
+            alert('Error initializing cameras: ' + e.toString());
         });
     </script>
 </body>
