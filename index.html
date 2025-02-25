@@ -4,7 +4,6 @@
     <title>QR Code Scanner</title>
     <script type="module">
         import QrScanner from "https://unpkg.com/qr-scanner/qr-scanner.min.js";
-
         QrScanner.WORKER_PATH = 'https://unpkg.com/qr-scanner/qr-scanner-worker.min.js';
 
         window.addEventListener('load', () => {
@@ -17,12 +16,10 @@
         });
 
         function sendDataToGoogleSheet(data) {
-            fetch(https://script.google.com/macros/s/AKfycbzoVA8MSVpeGcqCCDP3rxyoqEvKI2iM7E5s89NMfUjr/dev', {
+            fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `data=${encodeURIComponent(data)}`
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'data=' + encodeURIComponent(data)
             })
             .then(response => response.text())
             .then(result => console.log(result))
