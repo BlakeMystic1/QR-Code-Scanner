@@ -16,7 +16,7 @@
         });
 
         function sendDataToGoogleSheet(data) {
-            fetch('https://script.google.com/macros/s/AKfycbzoVA8MSVpeGcqCCDP3rxyoqEvKI2iM7E5s89NMfUjr/dev', {
+            fetch('https://script.google.com/macros/s/AKfycbxJtfbvUu7vBeWEiJY1FoGT1eMRYxuQsuC37xDIG8oEUerWzQadmpscWDAgI6uRP1qUGA/exec', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'data=' + encodeURIComponent(data)
@@ -29,6 +29,6 @@
 </head>
 <body>
     <h1>QR Code Scanner</h1>
-    <video id="qr-video" width="320" height="240" style="border: 1px solid black;"></video>
+    <video id="qr-video" width="1000" height="1000" style="border: 1px solid black;"></video>
 </body>
 </html>
