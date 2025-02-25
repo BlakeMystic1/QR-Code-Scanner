@@ -2,35 +2,36 @@
 <html>
 <head>
     <title>QR Code Scanner</title>
-    <!-- Include Instascan library from a CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
+    <script type="module">
+        import QrScanner from "https://unpkg.com/qr-scanner/qr-scanner.min.js";
+
+        QrScanner.WORKER_PATH = 'https://unpkg.com/qr-scanner/qr-scanner-worker.min.js';
+
+        window.addEventListener('load', () => {
+            const video = document.getElementById('qr-video');
+            const qrScanner = new QrScanner(video, result => {
+                console.log('decoded qr code:', result);
+                sendDataToGoogleSheet(result);
+            });
+            qrScanner.start();
+        });
+
+        function sendDataToGoogleSheet(data) {
+            fetch('YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `data=${encodeURIComponent(data)}`
+            })
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
 </head>
 <body>
     <h1>QR Code Scanner</h1>
-    <video id="preview" width="320" height="240"></video>
-    <script>
-        let scanner = new Instascan.Scanner({
-            video: document.getElementById('preview'),
-            scanPeriod: 5,
-            mirror: false
-        });
-
-        scanner.addListener('scan', function(content) {
-            console.log('Scanned content:', content);
-            // You can process the content here, such as sending it to a server or displaying it on the page
-        });
-
-        Instascan.Camera.getCameras().then(function(cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]); // Start the first camera found
-            } else {
-                console.error('No cameras found.');
-                alert('No cameras found.');
-            }
-        }).catch(function(e) {
-            console.error('Error initializing cameras:', e);
-            alert('Error initializing cameras: ' + e.toString());
-        });
-    </script>
+    <video id="qr-video" width="320" height="240" style="border: 1px solid black;"></video>
 </body>
 </html>
