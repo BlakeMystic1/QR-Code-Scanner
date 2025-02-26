@@ -4,10 +4,17 @@
     <meta charset="UTF-8">
     <title>QR Code Scanner</title>
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <style>
+        #reader {
+            width: 800px; /* Adjusted width */
+            height: 600px; /* Adjusted height */
+            margin: auto; /* Centering the scanner */
+        }
+    </style>
 </head>
 <body>
     <h1>QR Code Scanner</h1>
-    <div style="width: 1500px;" id="qr-reader"></div>
+    <div id="reader"></div>
     <script>
         function onScanSuccess(decodedText, decodedResult) {
             console.log(`Code matched = ${decodedText}`, decodedResult);
@@ -15,23 +22,28 @@
         }
 
         function sendDataToGoogleSheet(data) {
-            const url = 'https://script.google.com/macros/s/AKfycbwCEOciLWesFw1CTnWtFePnM1ESETXZeyxgItLXMChFDDsCC1n6b0kQvkJJWIYOm-nUOg/exec'; // Replace with your Google Apps Script URL
-            const parsedData = {name: data.split(';')[0], email: data.split(';')[1]};
+            const url = 'https://script.google.com/macros/s/AKfycbwCEOciLWesFw1CTnWtFePnM1ESETXZeyxgItLXMChFDDsCC1n6b0kQvkJJWIYOm-nUOg/exec'; // Your Google Apps Script URL
             fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: JSON.stringify(parsedData)
+                body: 'data=' + encodeURIComponent(data)
             })
-            .then(response => response.json())
-            .then(data => console.log(data))
+            .then(response => response.text())
+            .then(result => console.log('Server response:', result))
             .catch(error => console.error('Error:', error));
         }
 
-        var html5QrcodeScanner = new Html5QrcodeScanner(
-            "qr-reader", { fps: 10, qrbox: 250 });
-        html5QrcodeScanner.render(onScanSuccess);
+        var html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" }, // or "user" for front camera
+            {
+                fps: 10,
+                qrbox: { width: 300, height: 300 } // This defines the QR scanning region
+            },
+            onScanSuccess
+        );
     </script>
 </body>
 </html>
