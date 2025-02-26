@@ -1,34 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>QR Code Scanner</title>
-    <script type="module">
-        import QrScanner from "https://unpkg.com/qr-scanner/qr-scanner.min.js";
-        QrScanner.WORKER_PATH = 'https://unpkg.com/qr-scanner/qr-scanner-worker.min.js';
-
-        window.addEventListener('load', () => {
-            const video = document.getElementById('qr-video');
-            const qrScanner = new QrScanner(video, result => {
-                console.log('decoded qr code:', result);
-                sendDataToGoogleSheet(result);
-            });
-            qrScanner.start();
-        });
-
-        function sendDataToGoogleSheet(data) {
-            fetch('https://script.google.com/macros/s/AKfycbzkN_0i94i0LOMnuuBxIAB61aLLW5dB76O-AKfcRcGjqIkIVXwHmUIkdOxJjfoImVhOOg/exec', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'data=' + encodeURIComponent(data)
-            })
-            .then(response => response.text())
-            .then(result => console.log(result))
-            .catch(error => console.error('Error:', error));
-        }
-    </script>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
 </head>
 <body>
     <h1>QR Code Scanner</h1>
-    <video id="qr-video" width="1000" height="1000" style="border: 1px solid black;"></video>
+    <div style="width: 500px;" id="qr-reader"></div>
+    <script>
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log(`Code matched = ${decodedText}`, decodedResult);
+            sendDataToGoogleSheet(decodedText);
+        }
+
+        function sendDataToGoogleSheet(data) {
+            const url = 'https://script.google.com/macros/s/AKfycbwCEOciLWesFw1CTnWtFePnM1ESETXZeyxgItLXMChFDDsCC1n6b0kQvkJJWIYOm-nUOg/exec'; // Replace with your Google Apps Script URL
+            const parsedData = {name: data.split(';')[0], email: data.split(';')[1]};
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(parsedData)
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
 </body>
 </html>
